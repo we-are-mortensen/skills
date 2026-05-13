@@ -61,7 +61,7 @@ De-promotion is rare but legitimate — it keeps the component library focused o
 
 - **Promoting too eagerly.** A pattern used twice is a candidate; used once is not. Wait for the second use unless the designer explicitly asks.
 - **Wrong tier.** An "atom" with three internal sub-elements is probably a molecule. An "organism" that's just a styled button is an atom. Re-check the definitions in `SKILL.md`.
-- **Leaky contract.** If two call sites need slightly different markup, that's fine — express the difference via a prop/local, not by duplicating the component.
+- **Leaky contract.** If two call sites need slightly different markup, that's fine — but pick the right tool. Small differences (color, size, label, single conditional) → **prop/local**. Structural differences (different child arrangement, different sub-elements, a giant ternary in the markup) → **variants** (`../variants.md`). Never duplicate the component.
 - **Hidden hardcoded values.** Inline markup often hides hex colors or fixed pixel sizes that need to become tokens during promotion. Surface them; don't bury them in the new component.
 - **Skipping the visual diff.** A "successful" refactor that drops a class breaks hi-fi. The diff is non-negotiable.
 - **Big-bang refactors.** Promote one component at a time. Multi-component refactors hide regressions.

@@ -90,6 +90,10 @@ The designer pastes a Figma URL. Lo-fi from Figma uses the **structure** from Fi
 
 Regardless of how you got here, produce **one** plan as text in the chat. Do not modify any files yet.
 
+0. **Scope check** — if `site-architecture.md` exists at the project root, look up the page being wireframed in its table. Three outcomes:
+   - **Present** — note the route and the description; use them as constraints on the wireframe.
+   - **Missing but the designer treats it as in-scope** — surface this and offer to add it to `site-architecture.md` as part of this work. Don't proceed without resolving — silent additions undermine the scope record.
+   - **Architecture doc doesn't exist** — fine; the designer chose to discover structure as the project unfolds. Skip this check.
 1. **Component list** — every organism the page needs, in stacking order. For each organism, list the molecules and atoms it composes.
 2. **For every component**, mark one of:
    - ✅ **exists** — give the path
@@ -139,6 +143,12 @@ Once the plan is approved:
 The designer responds with notes — "this section should be above that one", "add a filter row", "the card should also show date". Apply notes inside Mode A (still lo-fi) until the designer says **"this is good, let's hi-fi it"** — at which point switch to Mode B (`hi-fi.md`).
 
 If the designer wants to **change entry path mid-iteration** (e.g., "actually let me send you a Figma instead"), treat that as a fresh Phase 1: restart with the new entry path's steps, then reconcile the plan with whatever's already been built.
+
+### Exploring 2+ structural alternatives → variants
+
+If during iteration the designer asks for **alternative layouts of a single block** — "let me see this hero stacked vs split", "try the filters as a sidebar instead of a top row" — that's a structural variant exploration, not a structural rebuild. Stay in lo-fi, convert the block into a variant folder, and let the designer flip between options via the variant sidebar.
+
+See `../variants.md` for the file convention and sidebar wiring. 2–4 variants per block is the useful range.
 
 ---
 

@@ -47,6 +47,20 @@ Coders integrate components with the CMS (swap real-content props / `locals` for
 
 ---
 
+## Variants
+
+If any block on the page has variants (folder with an entry + 2+ variant files — see `variants.md`):
+
+- [ ] Every variant-bearing block has an **explicit `variant` value passed in by the page**. The entry's fallback is a safety net, not the handoff value.
+- [ ] The chosen variant matches what the designer ratified in the most recent review (cross-check against the URL params in the final reviewed preview; the page props should match what the sidebar was showing).
+- [ ] The entry's contract documents the available variants and notes the default in a comment (e.g., `default: split — chosen 2026-05-12 review`).
+- [ ] Unused variant files remain in the folder — they are cheap to keep and useful for future iteration. No silent deletions.
+- [ ] The sidebar is **inert in `npm run build` output**:
+  - Grep the built HTML for `data-variant-key` — there should be **zero** matches (only the chosen variant renders in production, without the registry wrapper).
+  - Grep the built HTML for `variant-sidebar` — zero matches (the sidebar markup and script are dev-gated).
+
+---
+
 ## Hi-fi only
 
 If the page is hi-fi (`data-fidelity="hi"`):
@@ -101,8 +115,10 @@ Print a one-paragraph summary of what was handed off, listing:
 - Stack and fidelity
 - New components created (path + tier)
 - Components reused (path)
+- Variant-bearing blocks with the chosen variant per block (e.g., `Hero → split`, `CardGrid → masonry`)
 - New tokens added to `app.css @theme`
 - Any GSAP/Three.js work and where it lives
 - Any items the designer flagged as "coder decides" (e.g., empty-state copy, error states)
+- If `site-architecture.md` exists: which pages from the doc are handed off vs. still planned (and any pages added/dropped during this round so the doc reflects current scope)
 
 The summary lets the coder pick up the work without re-reading every file.

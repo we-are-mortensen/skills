@@ -1,6 +1,6 @@
 ---
 name: mortensen-design
-description: Designer-first workflow for producing lo-fi wireframes and hi-fi components in Astro or Vite+HTML projects. Generates pages and components with strict atomic structure (atoms/molecules/organisms/templates/pages), Tailwind v4 tokens from app.css, mandatory container-fluid and the 12-col grid-standard utility, WCAG AA accessibility on hi-fi, and CMS-ready handoff. Use this skill whenever the user wants to create, iterate, or promote wireframes / components / pages — including phrases like "create a lo-fi for…", "wireframe a new page", "hi-fi this page", "turn this into a hi-fi", "vibe-design this hero", "make a component out of this", "promote this to an atom", "extract this into a molecule", or any request to build pages / sections / components in this mockup project. Lo-fi wireframes can start from three entry paths — (1) from scratch via collaborative vibe-design, (2) from a hand-drawn sketch image plus real content ("wireframe this sketch", "turn this drawing into a lo-fi"), or (3) from a Figma URL ("lo-fi from this Figma", "wireframe this Figma frame in grayscale"). Also use when the user provides real content and asks for a page, when the user shares a Figma URL or website reference for hi-fi inspiration, or when an existing lo-fi needs to evolve toward final design. Even if the user does not explicitly say "lo-fi" / "hi-fi" / "wireframe", use this skill whenever they ask to build, design, or restructure any page or component in this project.
+description: Designer-first workflow for producing lo-fi wireframes and hi-fi components in Astro or Vite+HTML projects. Generates pages and components with strict atomic structure (atoms/molecules/organisms/templates/pages), Tailwind v4 tokens from app.css, mandatory container-fluid and the 12-col grid-standard utility, WCAG AA accessibility on hi-fi, and CMS-ready handoff. Use this skill whenever the user wants to create, iterate, or promote wireframes / components / pages — including phrases like "create a lo-fi for…", "wireframe a new page", "hi-fi this page", "turn this into a hi-fi", "vibe-design this hero", "make a component out of this", "promote this to an atom", "extract this into a molecule", or any request to build pages / sections / components in this mockup project. Lo-fi wireframes can start from three entry paths — (1) from scratch via collaborative vibe-design, (2) from a hand-drawn sketch image plus real content ("wireframe this sketch", "turn this drawing into a lo-fi"), or (3) from a Figma URL ("lo-fi from this Figma", "wireframe this Figma frame in grayscale"). Also use when the user provides real content and asks for a page, when the user shares a Figma URL or website reference for hi-fi inspiration, or when an existing lo-fi needs to evolve toward final design. Also use when the user wants to **explore alternatives of a single block** — phrases like "give me three variants of this hero", "show two versions of this section", "try a split layout and a stacked one", "create a variant", "alternative layouts for this card grid" — in either lo-fi or hi-fi. Also use when the user wants to **map or scope the site's pages up front** — phrases like "here's the site architecture", "I have a FigJam tree map", "let me share the sitemap", "what pages do we need", "scope this project", "page hierarchy", "site map for a new project" — at which point Mode D ingests the tree (FigJam URL, PNG, typed list, or external URL) and writes `site-architecture.md`. Even if the user does not explicitly say "lo-fi" / "hi-fi" / "wireframe" / "variant" / "architecture", use this skill whenever they ask to build, design, restructure, explore alternatives, or define scope for any page or component in this project.
 ---
 
 # mortensen-design — Wireframes & Hi-Fi Workflow
@@ -8,6 +8,21 @@ description: Designer-first workflow for producing lo-fi wireframes and hi-fi co
 Designer-first workflow for the Mortensen-style mockup projects. Designers author **lo-fi wireframes** and **hi-fi designs** as near-final components, validate them in-browser, and hand the result to coders for CMS integration.
 
 This skill is a router. The core file (this one) sets the non-negotiables that apply everywhere. Mode-, stack-, and concern-specific details live in `references/`; load them on demand once you know which mode and stack are active.
+
+---
+
+## Step 0 — Is this a new project? Check for architecture.
+
+Before Step 1, check whether this is a fresh project:
+
+- Is `src/pages/` (Astro) or `src/views/` (Vite) absent or empty?
+- Is there no `site-architecture.md` at the project root?
+
+If **both are true**, this is almost certainly a brand-new project and **Mode D (Architecture)** should run first. Surface that to the designer:
+
+> Looks like a fresh project. Do you have a site architecture / tree map ready? I can ingest a FigJam URL, a PNG export, a typed page tree, or an existing site's URL — see Mode D. If you'd rather discover structure as we go, we can skip this and start with a single page in Mode A.
+
+Skip Mode D if the designer explicitly opts out, or if `site-architecture.md` already exists (use it as scope, jump to Step 1). Don't force the doc — but make sure the designer makes the call consciously.
 
 ---
 
@@ -22,11 +37,11 @@ Before touching any file, state these back to the designer in one short message 
    - First wireframe of a page → almost always `lo`.
    - "Make this final / production / pretty / branded" → `hi`.
    - Hi-fi requires designer-provided palette + fonts before starting.
-3. **Mode** — A, B, or C (see below)
+3. **Mode** — A, B, C, or D (see below)
 
 Confirmation message template:
 
-> Stack: **<Astro | Vite>**. Fidelity: **<lo | hi>**. Mode: **<A | B | C>** — <one-line mode description>. Confirm before I plan.
+> Stack: **<Astro | Vite>**. Fidelity: **<lo | hi | n/a for Mode D>**. Mode: **<A | B | C | D>** — <one-line mode description>. Confirm before I plan.
 
 ---
 
@@ -37,8 +52,9 @@ Confirmation message template:
 | **A — Lo-Fi wireframe** | Starting a new page. Three entry paths: **A1** from scratch (vibe-design the structure), **A2** from a hand-drawn sketch image + content, **A3** from a Figma URL (structure only — palette/fonts ignored for lo-fi). | `references/modes/lo-fi.md` |
 | **B — Hi-Fi vibe-design** | A validated lo-fi exists; the designer wants to evolve it into the final visual design. May incorporate Figma URLs or external website references as inspiration. | `references/modes/hi-fi.md` |
 | **C — Component promotion** | Inline markup should be reused; a molecule is doing too much and should be split; an organism turns out to be page-specific and should be inlined. | `references/modes/promotion.md` |
+| **D — Site architecture** | Starting a new project (or revisiting scope mid-project) and the designer has a tree map / sitemap to share. Four entry paths: **D1** FigJam URL, **D2** PNG image, **D3** typed indented list, **D4** existing site URL. Produces `site-architecture.md` at project root. | `references/modes/architecture.md` |
 
-Read **only the relevant mode file**. Do not preload all three.
+Read **only the relevant mode file**. Do not preload all four.
 
 ---
 
@@ -70,6 +86,8 @@ src/styles/app.css           — single source of truth for tokens
 ```
 
 **Promotion rule**: when something is used in 2+ places, promote it to the appropriate tier. Never duplicate markup.
+
+**Variant rule**: when a single block needs 2+ structurally different alternatives (e.g., "show me three versions of this hero"), express them as **variants** — convert the component into a folder of sibling variant files routed by the entry's `variant` prop. See `references/variants.md`. Don't duplicate the component, and don't bloat one file with a giant internal switch.
 
 ### container-fluid is mandatory; grid-standard only when a grid is needed
 
@@ -144,6 +162,8 @@ Every mode has the same two-phase shape.
 - A11y review or hi-fi handoff verification → `references/a11y-checklist.md`
 - Token discipline, container-fluid / grid-standard edge cases → `references/tokens-and-grid.md`
 - "Is this ready for the coder?" → `references/handoff-checklist.md`
+- Designer wants to explore 2+ alternatives of one block (lo-fi or hi-fi) → `references/variants.md` (plus the dev-only sidebar in `assets/variant-sidebar.{html,js}`)
+- Need to scope the project's pages up front (or revisit scope) → `references/modes/architecture.md` (writes `site-architecture.md` at project root)
 - Animation work → invoke `gsap-skills:gsap-core` (and `gsap-timeline` / `gsap-scrolltrigger` / `gsap-performance` as needed). Always respect `prefers-reduced-motion` via `gsap.matchMedia()`.
 - 3D / WebGL → Three.js, lazy-load only, provide a static poster fallback.
 - New page brainstorming → `superpowers:brainstorming`.

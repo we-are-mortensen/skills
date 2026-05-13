@@ -24,6 +24,8 @@ Hi-fi is **strictly downstream** of a lo-fi. It cannot start without a lo-fi HTM
 
 If any of (1)/(2)/(3) is missing, ask. Don't infer a palette from a Figma reference unless the designer explicitly says "use the Figma palette" — references are inspiration, not specification.
 
+**Scope check** (light): if `site-architecture.md` exists at the project root, verify the page being upgraded has a row in the table. The lo-fi presumably had one already — but check that the page hasn't been quietly renamed or dropped from scope since.
+
 ### What "the lo-fi" can be
 
 - **A whole page** — most common. The page file plus all the components it transitively uses are upgraded together.
@@ -86,6 +88,14 @@ Expect multiple rounds. Each round:
 - Repeat until the designer says **"ready for coder"** — at which point run `../handoff-checklist.md`.
 
 Multiple directions can be explored in parallel branches if the designer wants a side-by-side comparison. Use git worktrees or duplicated page files for that — confirm with the designer.
+
+### Exploring 2+ visual / motion alternatives → variants
+
+When the designer can't pick between two visual treatments of the **same** block — different shadow systems, different motion intensity, different background imagery — render both as variants of that block and let the sidebar flip between them in browser. This is the right tool when the structure is settled and only the look is in question.
+
+If the alternatives change the **structure** (different child arrangement, different organism composition), that's Mode A territory; back out, restructure in lo-fi, then return to hi-fi.
+
+See `../variants.md` for the file convention, the dev sidebar, and the handoff resolution (every variant-bearing block ships with a chosen default).
 
 ---
 

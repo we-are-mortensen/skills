@@ -202,6 +202,100 @@ If `npm run build` fails, the most common cause is a prop type mismatch (extra p
 
 ---
 
+## Variants — folder per block, entry routes to a variant
+
+When a block needs 2+ alternatives, convert it into a folder with an entry and one file per variant. Pages keep importing the entry; the entry routes based on the `variant` prop. The full pattern (file convention, lo-fi vs hi-fi, handoff) lives in `../variants.md` — this section just shows the Astro-specific code.
+
+```
+src/components/organisms/Hero/
+├── index.astro
+├── Stacked.astro
+├── Split.astro
+└── ImageBg.astro
+```
+
+Each variant file has the same `interface Props` and consumes the same content. The entry maps variant keys to components and renders accordingly:
+
+```astro
+---
+// src/components/organisms/Hero/index.astro
+import Stacked from './Stacked.astro';
+import Split from './Split.astro';
+import ImageBg from './ImageBg.astro';
+
+interface Props {
+  variant?: 'stacked' | 'split' | 'image-bg';
+  eyebrow?: string;
+  heading: string;
+  lede?: string;
+}
+const { variant = 'stacked', ...rest } = Astro.props;
+
+const variants = { stacked: Stacked, split: Split, 'image-bg': ImageBg };
+const variantKeys = Object.keys(variants) as Array<keyof typeof variants>;
+
+const isDevtools =
+  import.meta.env.DEV || Astro.url.searchParams.has('devtools');
+const ActiveVariant = variants[variant] ?? Stacked;
+---
+{isDevtools ? (
+  <div
+    data-variant-key="hero"
+    data-variants={variantKeys.join(',')}
+    data-variant-current={variant}
+  >
+    {variantKeys.map((key) => {
+      const V = variants[key];
+      return (
+        <div data-variant={key} hidden={key !== variant}>
+          <V {...rest} />
+        </div>
+      );
+    })}
+  </div>
+) : (
+  <ActiveVariant {...rest} />
+)}
+```
+
+Pages set the chosen variant as a prop, exactly like any other prop:
+
+```astro
+<Hero
+  variant="split"
+  heading="Events that move <Project> forward"
+  lede="…"
+/>
+```
+
+In production builds (`astro build` without `?devtools=1`), only the chosen variant renders — no registry wrapper, no hidden siblings. At handoff, the page's `variant=` value IS the production pick.
+
+### Wiring the sidebar in BaseLayout
+
+The sidebar markup + script lives in `assets/variant-sidebar.html` and `assets/variant-sidebar.js` inside this skill. Copy the HTML into a component (e.g., `src/components/_dev/VariantSidebar.astro`) and the JS into `public/scripts/variant-sidebar.js`. Then in the layout:
+
+```astro
+---
+// src/layouts/BaseLayout.astro (excerpt)
+import VariantSidebar from '@/components/_dev/VariantSidebar.astro';
+const isDevtools =
+  import.meta.env.DEV || Astro.url.searchParams.has('devtools');
+---
+<body data-fidelity={fidelity}>
+  <slot />
+  {isDevtools && (
+    <>
+      <VariantSidebar />
+      <script src="/scripts/variant-sidebar.js" is:inline defer></script>
+    </>
+  )}
+</body>
+```
+
+Never include the sidebar from a page — once in the layout is enough, and the gate keeps it out of production.
+
+---
+
 ## Astro-specific troubleshooting
 
 - **"Cannot find module '@/components/…'"** — Astro path aliases need to be set up in `tsconfig.json` (`"paths": { "@/*": ["src/*"] }`). If `@/` isn't configured, fall back to relative imports.
