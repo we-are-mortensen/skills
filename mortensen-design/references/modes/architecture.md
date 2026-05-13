@@ -1,6 +1,8 @@
 # Mode D — Site architecture
 
-**When**: starting a new project, or revisiting scope mid-project. The output is `site-architecture.md` at the project root — a structured page list (route, parent, short description) that anchors every subsequent Mode A / Mode B request to a known scope.
+**Relationship to Mode N**: when the designer is starting a brand-new project end-to-end, use **Mode N (`new-project.md`)** — the kickoff umbrella that gathers the project brief, calls into the Phase 1 + Phase 2 of this file for the architecture portion, and scaffolds the stack. Use **Mode D directly (this file)** when the project is already scaffolded but the architecture was never captured, or when scope has shifted substantially mid-project and it's cleaner to redo the doc than patch it.
+
+**When**: starting a new project (via Mode N), or revisiting scope mid-project (directly). The output is `site-architecture.md` at the project root — a structured page list (route, parent, short description) that anchors every subsequent Mode A / Mode B request to a known scope.
 
 The architecture is a **starting point, not a contract**. Pages can be added, removed, or restructured later; the doc evolves with the project. But agreeing on the scope up front prevents drift and lets the skill confidently say "this is in scope" or "this isn't — should we add it?" when the designer brings work for a specific page.
 
