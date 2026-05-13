@@ -26,9 +26,17 @@ También puedes pasarle el nombre del skill directamente:
 npx github:we-are-mortensen/skills mortensen-design
 ```
 
-### Opción 2 — `curl | bash`
+### Opción 2 — `npx skills add` (instalación global rápida)
 
-Mismo instalador interactivo, sin necesidad de Node:
+Usa el CLI genérico de Agent Skills. **No pregunta nada**, instala siempre en global (`~/.claude/skills/`):
+
+```bash
+npx skills add https://github.com/we-are-mortensen/skills --skill mortensen-design
+```
+
+### Opción 3 — `curl | bash`
+
+Mismo instalador interactivo que la opción 1, sin necesidad de Node:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/we-are-mortensen/skills/main/install.sh | bash
@@ -36,7 +44,7 @@ curl -fsSL https://raw.githubusercontent.com/we-are-mortensen/skills/main/instal
 curl -fsSL https://raw.githubusercontent.com/we-are-mortensen/skills/main/install.sh | bash -s mortensen-design
 ```
 
-### Opción 3 — Manual
+### Opción 4 — Manual
 
 ```bash
 # Global (todas las sesiones)
