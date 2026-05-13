@@ -1,0 +1,31 @@
+/* mortensen-design — Lo-fi neutral tokens
+ *
+ * Drop this @theme block into the project's app.css (alongside any project palette).
+ * These tokens are used only when <body data-fidelity="lo">. The same Tailwind
+ * utilities (bg-lo-bg, text-lo-text, border-lo-border, …) are generated from them.
+ *
+ * Hi-fi REPLACES the project palette but KEEPS these lo-fi neutrals — keeping them
+ * available means a page can be flipped back to lo-fi for review without rebuilding
+ * components.
+ */
+
+@theme {
+  --color-lo-bg: #ffffff;
+  --color-lo-surface: #f4f4f5;     /* zinc-100 */
+  --color-lo-surface-2: #e4e4e7;   /* zinc-200 */
+  --color-lo-border: #d4d4d8;      /* zinc-300 */
+  --color-lo-text: #18181b;        /* zinc-900 */
+  --color-lo-text-muted: #71717a;  /* zinc-500 */
+  --color-lo-placeholder: #d4d4d8; /* zinc-300 — for image placeholder boxes */
+}
+
+/* Optional: an explicit "lo-fi mode" body style that pins the page to the system
+ * font stack regardless of any project font tokens. Apply via [data-fidelity="lo"]
+ * so hi-fi flips back to brand fonts automatically when the attribute changes. */
+body[data-fidelity="lo"] {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+               "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans",
+               sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--color-lo-text);
+  background-color: var(--color-lo-bg);
+}
