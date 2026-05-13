@@ -12,27 +12,29 @@ Colección oficial de **Agent Skills** de [Mortensen](https://mortensen.cat) par
 
 ## Instalación
 
-### Opción 1 — Instalador interactivo (recomendado)
+### Opción 1 — `npx` (recomendado)
 
 Te pregunta qué skill instalar y si lo quieres **global** (disponible en todas tus sesiones de Claude Code) o **local** (sólo en el proyecto actual):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/we-are-mortensen/skills/main/install.sh | bash
+npx github:we-are-mortensen/skills
 ```
 
 También puedes pasarle el nombre del skill directamente:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/we-are-mortensen/skills/main/install.sh | bash -s mortensen-design
+npx github:we-are-mortensen/skills mortensen-design
 ```
 
-### Opción 2 — Con el CLI `skills` (estilo vercel-labs)
+### Opción 2 — `curl | bash`
+
+Mismo instalador interactivo, sin necesidad de Node:
 
 ```bash
-npx skills add https://github.com/we-are-mortensen/skills --skill mortensen-design
+curl -fsSL https://raw.githubusercontent.com/we-are-mortensen/skills/main/install.sh | bash
+# o con el skill por argumento:
+curl -fsSL https://raw.githubusercontent.com/we-are-mortensen/skills/main/install.sh | bash -s mortensen-design
 ```
-
-Esto lo instala en `~/.claude/skills/mortensen-design/` (instalación global).
 
 ### Opción 3 — Manual
 
