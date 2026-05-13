@@ -138,6 +138,19 @@ The fidelity switch is `data-fidelity="lo"` / `data-fidelity="hi"` on `<body>`. 
 
 Lo-fi token CSS to drop into app.css: `assets/lo-fi-tokens.css`.
 
+### Visual validation is the designer's job
+
+After `npm run build` succeeds and `npm run dev` is up, **stop and hand off to the designer**. Print a short "ready — please verify at 375 / 768 / 1024 / 1440" message and wait for their feedback.
+
+**Do not auto-invoke** Chrome MCP, Playwright MCP, or the Claude for Chrome extension to take screenshots, check breakpoints, or sanity-check the rendered page. The designer is already looking at the dev URL — duplicating that view via the model burns tokens for no added value.
+
+**When browser tools ARE appropriate**:
+- The designer explicitly asks for visual debugging — *"something looks off at lg:, can you check?"* / *"compare before vs after the refactor"* / *"screenshot the hero"*. Then use Chrome MCP / Playwright MCP / Claude for Chrome, whichever the environment provides.
+- Data gathering that's an **input**, not a validation: Figma reference capture in Modes A3 / B, sitemap-less site crawl in Mode D4. These are designer-asked inputs, not the model deciding to verify.
+- A11y programmatic checks (`a11y-checklist.md`) when the designer asks for them.
+
+This applies to **every mode** and **every Phase 2 step that previously said "visual check via Chrome MCP / Playwright MCP"**. The mode references have been updated to reflect this; if any older instruction conflicts, this rule wins.
+
 ---
 
 ## Phase discipline (every mode)
@@ -155,7 +168,7 @@ Every mode has the same two-phase shape.
 **Phase 2 — Build**
 - Create/update components in the correct tier folders following all non-negotiables.
 - Run `npm run build` (catch errors) then `npm run dev`.
-- Visual-check at 375 / 768 / 1024 / 1440 via Chrome MCP or Playwright MCP.
+- **Hand verification to the designer** — print a short message naming the dev URL and the four breakpoints to check (375 / 768 / 1024 / 1440). Do not auto-invoke browser tools. See the "Visual validation" non-negotiable below.
 - For hi-fi: run the A11y checklist before declaring done.
 
 ---
@@ -183,7 +196,8 @@ Every mode has the same two-phase shape.
 - ❌ Carry brand tokens between projects — hi-fi palette + fonts are designer-provided each time.
 - ❌ Touch CMS integration or wire data — that is the coder's job after handoff.
 - ❌ Add `<style>` blocks or inline `style="…"` attributes unless absolutely necessary (dynamic values that can't be expressed in classes are the only exception).
-- ❌ Trigger JS alerts/confirms when validating in Chrome MCP — they block all further tool calls.
+- ❌ Auto-invoke Chrome MCP / Playwright MCP / Claude for Chrome to validate wireframes or component changes — the designer verifies in their own browser. Browser tools are reserved for designer-requested debugging (see "Visual validation" above).
+- ❌ When browser tools ARE invoked (designer-requested debugging): never trigger JS alerts/confirms — they block all further tool calls.
 
 ---
 

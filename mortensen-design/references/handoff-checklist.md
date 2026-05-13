@@ -79,7 +79,7 @@ If the page is hi-fi (`data-fidelity="hi"`):
 
 ## Visual
 
-- [ ] Verified at **375 / 768 / 1024 / 1440** via Chrome MCP or Playwright MCP.
+- [ ] **Designer has confirmed** at **375 / 768 / 1024 / 1440** in browser. (Skill never auto-validates with Chrome MCP / Playwright / Claude for Chrome — those are reserved for designer-requested debugging.)
 - [ ] No horizontal scroll at any breakpoint.
 - [ ] No broken layouts or content overflow.
 - [ ] Hover, focus, and active states all function and are visible on hi-fi.

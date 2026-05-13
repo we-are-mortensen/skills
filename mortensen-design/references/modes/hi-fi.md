@@ -71,10 +71,10 @@ Components stay the same; styles and motion change. Do not restructure unless th
    - 🅐 Astro: render the Three.js island with `client:visible`.
    - 🅥 Vite: dynamic `import()` triggered by an `IntersectionObserver`.
    - Provide a static poster image as a fallback. Lazy-load all Three.js modules.
-8. **Build & visual-validate**:
+8. **Build & hand off for verification**:
    - `npm run build` (fix any errors)
-   - `npm run dev` and check 375 / 768 / 1024 / 1440 via Chrome MCP or Playwright MCP
-   - Confirm contrast and focus states at each breakpoint
+   - `npm run dev` — print the dev URL and ask the designer to verify at **375 / 768 / 1024 / 1440** in their own browser, paying special attention to contrast, focus states, and motion at each breakpoint.
+   - Do not auto-invoke Chrome MCP / Playwright / Claude for Chrome. If the designer flags a visual issue and asks for inspection, then use browser tools (see SKILL.md "Visual validation").
 
 ---
 

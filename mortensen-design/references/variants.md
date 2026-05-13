@@ -159,7 +159,7 @@ When a designer asks for variants:
 2. **Each variant file** is a standalone component: its own structure, its own classes, its own (if needed) tokens.
 3. **Update every call site** to import the entry (already does, if you just moved files); confirm with the designer that the page passes the intended default.
 4. **Wire the sidebar** in the layout if it isn't already (one-time setup per project).
-5. **Build & dev**, then visually flip through every variant via the sidebar at 375 / 768 / 1024 / 1440 (Chrome MCP / Playwright MCP).
+5. **Build & dev**, then **ask the designer to flip through every variant via the sidebar** at 375 / 768 / 1024 / 1440 in their own browser. Don't auto-invoke browser tools; if the designer asks for help inspecting a specific variant, then use Chrome MCP / Playwright / Claude for Chrome.
 
 ---
 

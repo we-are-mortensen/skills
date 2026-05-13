@@ -41,7 +41,10 @@ The output is a refactor: a new (or removed) component in the correct atomic tie
 4. **Build** to catch any errors:
    - 🅐 Astro: prop type errors are the most common cause of failure.
    - 🅥 Vite: missing `<include>` targets or unbalanced posthtml expressions.
-5. **Visual diff**: take screenshots at 375 / 768 / 1024 / 1440 **before** and **after** the refactor (Chrome MCP or Playwright MCP). They must be visually identical. Any difference means the contract is wrong or a class got lost — investigate before declaring done.
+5. **Visual diff (designer-led)**: a promotion that ships visual regressions defeats its purpose, so the diff is non-negotiable — but the designer runs it. Print:
+   > Refactor done at `<dev URL>`. Please compare the affected page(s) at **375 / 768 / 1024 / 1440** against the pre-refactor version (git stash / branch). Anything different = a contract bug; tell me what shifted and I'll fix.
+
+   If the designer asks for a programmatic before/after diff, then run Chrome MCP / Playwright / Claude for Chrome at the four breakpoints — but only on request, not by default.
 6. **Token consistency**: if the new component's markup hardcoded any value that was reused, extract it to app.css `@theme` as part of this promotion (see `../tokens-and-grid.md`).
 
 ---

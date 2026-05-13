@@ -134,7 +134,10 @@ Once the plan is approved:
    - 🅐 Astro: `npm run build` then `npm run dev` (http://localhost:4321)
    - 🅥 Vite: `npm run build` then `npm run dev` (http://localhost:5173)
    Fix any build error before continuing.
-8. **Visual check** at 375 / 768 / 1024 / 1440 via Chrome MCP or Playwright MCP. Confirm hierarchy holds at every breakpoint and there is no horizontal scroll.
+8. **Hand off to designer for verification**. Print a short message:
+   > Ready at `<dev URL>`. Please verify at **375 / 768 / 1024 / 1440** — check that the hierarchy holds, no horizontal scroll, content fits. Tell me what to adjust.
+
+   Do not run Chrome MCP / Playwright / Claude for Chrome on your own. If the designer reports a visual bug *and asks for inspection*, then invoke browser tools — see SKILL.md "Visual validation".
 
 ---
 
