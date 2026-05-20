@@ -230,7 +230,7 @@ Insert at the end of the list, preserving existing entries and the marker lines.
 
 ## Rich status index (when `site-architecture.md` exists)
 
-If Mode N produced a `site-architecture.md`, replace the simple placeholder above with this version. Vite serves static HTML, so the architecture markdown can't be parsed at request time the way Astro does. Instead, the table body is **agent-maintained**: bracketed by `<!-- ROWS:START -->` / `<!-- ROWS:END -->` markers, with one `<tr>` per page. The agent writes these rows on scaffold, and re-syncs the matching row whenever it edits a status cell in `site-architecture.md`.
+If Mode N produced a `site-architecture.md`, replace the simple placeholder above with this version. **`site-architecture.md` is the single source of truth for status**, exactly as on the Astro side: the rich index pulls its rows from there at build time via a small Vite plugin (defined further below). The agent never edits row markup — it only edits the architecture table, and the dev server reloads automatically.
 
 ```html
 <!-- src/views/index.html — rich status index (placeholder home) -->
@@ -240,7 +240,8 @@ If Mode N produced a `site-architecture.md`, replace the simple placeholder abov
     <img src="/assets/mortensen.png" alt="Mortensen" class="h-8 mb-6" />
     <h1 class="text-2xl md:text-3xl font-semibold text-lo-text">Project index</h1>
     <p class="mt-4 text-sm text-lo-text-muted">
-      Status mirrors <code class="font-mono">site-architecture.md</code>. Temporary index while the home wireframe is in progress — replaced when the real home is wireframed.
+      Status from <code class="font-mono">site-architecture.md</code>. Temporary index while the home wireframe is in progress — replaced when the real home is wireframed.
+      The <strong>Wireframe</strong> badge links to the lo-fi route; the <strong>UI</strong> badge links to the UI route under <code class="font-mono">/ui/</code>.
     </p>
 
     <section class="mt-12">
@@ -254,17 +255,7 @@ If Mode N produced a `site-architecture.md`, replace the simple placeholder abov
           </tr>
         </thead>
         <tbody>
-          <!-- ROWS:START -->
-          <!-- One <tr> per page, mirroring site-architecture.md. Status cells are <a> if started, <span> if "To do". Wireframe links to lo-fi route, UI links to /ui/<route>. Example: -->
-          <!--
-          <tr class="border-t border-lo-border">
-            <td class="py-3 pr-4"><a href="/events.html" class="font-medium text-lo-text hover:text-lo-text-muted">Events</a></td>
-            <td class="py-3 pr-4 font-mono text-sm text-lo-text-muted">/events</td>
-            <td class="py-3 pr-4"><a href="/events.html" class="inline-block px-2 py-0.5 rounded text-xs no-underline hover:opacity-80 border border-lo-text text-lo-text bg-lo-surface">Pending validation</a></td>
-            <td class="py-3 pr-4"><span class="inline-block px-2 py-0.5 rounded text-xs border border-lo-border text-lo-text-muted bg-lo-bg">To do</span></td>
-          </tr>
-          -->
-          <!-- ROWS:END -->
+          <!-- PAGES_ROWS -->
         </tbody>
       </table>
     </section>
@@ -272,23 +263,120 @@ If Mode N produced a `site-architecture.md`, replace the simple placeholder abov
 </include>
 ```
 
-**Badge classes by state** (apply to the `<span>` inside each status cell):
+The `<!-- PAGES_ROWS -->` token is replaced by the plugin defined in the next section. **Do not edit the rows in this file** — they're generated. To change a status, edit the corresponding cell in `site-architecture.md`.
 
-| State | Classes |
-|---|---|
-| `To do` | `border border-lo-border text-lo-text-muted bg-lo-bg` |
-| `Pending validation` | `border border-lo-text text-lo-text bg-lo-surface` |
-| `Validated` | `bg-lo-text text-lo-bg` |
+### The architecture-status Vite plugin
 
-**Maintenance rule**: when the agent updates a status cell in `site-architecture.md`, it must in the same turn:
-1. Locate the matching `<tr>` in `src/views/index.html` (between the markers).
-2. Update the badge class **and** the label text in the relevant `<td>`.
-3. If the status crossed the `To do` → `Pending validation` boundary, swap the cell from `<span>` to `<a>` with the correct href: Wireframe cells link to the lo-fi route; UI cells link to `/ui<route>`.
-4. If the status rolled back to `To do` (rare), swap the `<a>` back to `<span>`.
+Add the following plugin to `vite.config.ts` alongside the existing posthtml chain. It reads `site-architecture.md` at request time (and on every dev-server file change), parses the Pages table, renders the `<tr>` block, and substitutes it for `<!-- PAGES_ROWS -->` in any HTML it sees.
 
-Never restructure markup outside `<!-- ROWS:START -->` / `<!-- ROWS:END -->`. New pages added via "Mode D updating the architecture" require a fresh `<tr>` appended between the markers, with both status cells starting as `To do` `<span>`.
+```ts
+// vite.config.ts (additions for the architecture-status plugin)
+import { readFileSync, existsSync } from 'node:fs';
+import type { Plugin } from 'vite';
 
-When the designer wireframes the home page, overwrite the whole file the same way as the simple placeholder — drops the marker and the row block.
+interface PageRow {
+  route: string;
+  parent: string;
+  title: string;
+  description: string;
+  wireframe: string;
+  ui: string;
+}
+
+const architectureMdPath = resolve(__dirname, 'site-architecture.md');
+
+function parsePagesTable(md: string): PageRow[] {
+  const lines = md.split('\n');
+  const sectionStart = lines.findIndex((l) => l.trim().toLowerCase().startsWith('## pages'));
+  if (sectionStart === -1) return [];
+  let headerIdx = -1;
+  for (let i = sectionStart + 1; i < lines.length; i++) {
+    const t = lines[i].trim();
+    if (t.startsWith('## ')) break;
+    if (t.startsWith('|')) { headerIdx = i; break; }
+  }
+  if (headerIdx === -1) return [];
+  const rows: PageRow[] = [];
+  for (let i = headerIdx + 2; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line.startsWith('|')) break;
+    const cells = line.split('|').slice(1, -1).map((c) => c.trim().replace(/`/g, ''));
+    if (cells.length < 6) continue;
+    rows.push({
+      route: cells[0], parent: cells[1], title: cells[2],
+      description: cells[3], wireframe: cells[4], ui: cells[5],
+    });
+  }
+  return rows;
+}
+
+function badgeClasses(state: string): string {
+  const s = state.toLowerCase();
+  if (s.includes('validated')) return 'bg-lo-text text-lo-bg';
+  if (s.includes('pending'))   return 'border border-lo-text text-lo-text bg-lo-surface';
+  return 'border border-lo-border text-lo-text-muted bg-lo-bg';
+}
+
+const isStarted = (s: string) => !s.toLowerCase().includes('to do');
+const uiHref = (route: string) =>
+  route === '/' ? '/ui/' : `/ui${route.startsWith('/') ? route : `/${route}`}`;
+
+function renderRows(): string {
+  if (!existsSync(architectureMdPath)) return '';
+  const md = readFileSync(architectureMdPath, 'utf-8');
+  return parsePagesTable(md).map((p) => {
+    const wfCell = isStarted(p.wireframe)
+      ? `<a href="${p.route}" class="inline-block px-2 py-0.5 rounded text-xs no-underline hover:opacity-80 ${badgeClasses(p.wireframe)}">${p.wireframe}</a>`
+      : `<span class="inline-block px-2 py-0.5 rounded text-xs ${badgeClasses(p.wireframe)}">${p.wireframe}</span>`;
+    const uiCell = isStarted(p.ui)
+      ? `<a href="${uiHref(p.route)}" class="inline-block px-2 py-0.5 rounded text-xs no-underline hover:opacity-80 ${badgeClasses(p.ui)}">${p.ui}</a>`
+      : `<span class="inline-block px-2 py-0.5 rounded text-xs ${badgeClasses(p.ui)}">${p.ui}</span>`;
+    return `<tr class="border-t border-lo-border">
+      <td class="py-3 pr-4"><a href="${p.route}" class="font-medium text-lo-text hover:text-lo-text-muted">${p.title}</a></td>
+      <td class="py-3 pr-4 font-mono text-sm text-lo-text-muted">${p.route}</td>
+      <td class="py-3 pr-4">${wfCell}</td>
+      <td class="py-3 pr-4">${uiCell}</td>
+    </tr>`;
+  }).join('\n');
+}
+
+const architectureStatusPlugin = (): Plugin => ({
+  name: 'mortensen:architecture-status',
+  enforce: 'pre',
+  configureServer(server) {
+    server.watcher.add(architectureMdPath);
+    server.watcher.on('change', (file) => {
+      if (file === architectureMdPath) server.ws.send({ type: 'full-reload' });
+    });
+  },
+  transformIndexHtml: {
+    order: 'pre',
+    handler(html) {
+      return html.replace(/<!--\s*PAGES_ROWS\s*-->/g, renderRows());
+    },
+  },
+});
+```
+
+Register the plugin BEFORE the posthtml chain so the `<tr>` block is in place before posthtml processes the file:
+
+```ts
+export default defineConfig({
+  // … (root, build, input as before)
+  plugins: [
+    architectureStatusPlugin(),
+    posthtml({ /* … existing config … */ }),
+  ],
+});
+```
+
+**Behavior**:
+- Editing a status cell in `site-architecture.md` triggers a dev-server full reload; the index renders the new state instantly.
+- If `site-architecture.md` is absent or has no Pages table, `renderRows()` returns an empty string and the tbody renders empty — useful while scope is still being captured.
+- The plugin only affects HTML files that actually contain the `<!-- PAGES_ROWS -->` token. Other pages pass through untouched.
+- For ESM projects (`"type": "module"` in `package.json`), replace `__dirname` with `dirname(fileURLToPath(import.meta.url))` from `node:path` + `node:url`.
+
+When the designer wireframes the home page, overwrite the whole `src/views/index.html` with the real home wireframe — that drops the `<!-- PAGES_ROWS -->` token, and the plugin becomes a no-op on this file (other pages with the token would still pick up rows, but the placeholder home is the only consumer).
 
 ---
 

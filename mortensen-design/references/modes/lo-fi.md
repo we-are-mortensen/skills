@@ -143,7 +143,7 @@ Once the plan is approved:
 
    Do not run Chrome MCP / Playwright / Claude for Chrome on your own. If the designer reports a visual bug *and asks for inspection*, then invoke browser tools — see SKILL.md "Visual validation".
 
-10. **Bump page status to `Pending validation`** (only if `site-architecture.md` exists). In its Pages table, find the row whose `Route` matches this page and change the `Wireframe` cell to `Pending validation`. Do not touch the `UI` cell. This same edit causes the rich status index (Astro) to re-render with the new badge on the next build; for Vite, also re-sync the matching `<tr>` inside the `<!-- ROWS:START --> … <!-- ROWS:END -->` markers of `src/views/index.html` in the same turn.
+10. **Bump page status to `Pending validation`** (only if `site-architecture.md` exists). In its Pages table, find the row whose `Route` matches this page and change the `Wireframe` cell to `Pending validation`. Do not touch the `UI` cell. This single edit is enough for both stacks — the rich status index re-renders from `site-architecture.md` on the next reload (Astro via `?raw` import, Vite via the architecture-status plugin in `vite.config.ts`).
 
 ---
 
@@ -153,7 +153,7 @@ The designer responds with notes — "this section should be above that one", "a
 
 **Status transitions during iteration** (only if `site-architecture.md` exists):
 
-- Designer signs off ("looks good", "wireframe approved", "validated", "let's hi-fi it") → in the Pages table, set this page's `Wireframe` cell to `Validated`. For Vite, also re-sync the row in `src/views/index.html`.
+- Designer signs off ("looks good", "wireframe approved", "validated", "let's hi-fi it") → in the Pages table, set this page's `Wireframe` cell to `Validated`. Single-file edit — the rich status index reflects it on next reload.
 - Designer asks for rework after a previous validation ("the hero needs a different layout", "let's redo this") → roll the `Wireframe` cell back to `Pending validation`. Never silently move it back to `To do`.
 
 If the designer wants to **change entry path mid-iteration** (e.g., "actually let me send you a Figma instead"), treat that as a fresh Phase 1: restart with the new entry path's steps, then reconcile the plan with whatever's already been built.

@@ -183,7 +183,7 @@ When `site-architecture.md` exists, every page row carries two status columns: *
 | **Pending validation** | The agent has produced the work; the designer has not yet verified it in their own browser. |
 | **Validated** | The designer has signed off on this fidelity for this page. |
 
-The page table in `site-architecture.md` is the single source of truth. The project index (`src/pages/index.astro` for Astro, `src/views/index.html` for Vite) renders those statuses — Astro reads the markdown at build via `?raw`; Vite has the agent re-sync marker-bracketed rows in the same turn the status changes.
+The page table in `site-architecture.md` is the single source of truth for both stacks. The project index (`src/pages/index.astro` for Astro, `src/views/index.html` for Vite) renders those statuses — Astro reads the markdown at build via `?raw`; Vite uses a small `architecture-status` plugin in `vite.config.ts` (defined in `references/stacks/vite.md`) that substitutes a `<!-- PAGES_ROWS -->` token in the index. Either way, the agent only edits `site-architecture.md` — never the index itself.
 
 **Transitions** — these are the only times the agent edits a status cell:
 
