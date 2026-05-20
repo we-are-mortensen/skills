@@ -201,20 +201,23 @@ Use the layout shape from the stack reference (`../stacks/astro.md` for Astro, `
 
 The layout is the single place the variant sidebar is wired. Pages never include it.
 
-### 7. Scaffold `Header`, `Footer`, and the placeholder home
+### 7. Scaffold `Header`, `Footer`, and the project index
 
-These three files are the project's nav scaffolding. They start with empty link lists; pages are appended as they're wireframed (Mode A / Mode B keep them in sync — see SKILL.md "Header, Footer, and the home placeholder").
+Three files. The `Header` and `Footer` are identical regardless of whether architecture exists. The index has **two flavors**.
 
-Create:
+Always create:
 
 - `Header` organism — `src/components/organisms/Header.astro` (Astro) or `src/components/organisms/header.html` (Vite).
 - `Footer` organism — `src/components/organisms/Footer.astro` or `src/components/organisms/footer.html`.
-- Placeholder home — `src/pages/index.astro` (Astro) or `src/views/index.html` (Vite).
 
-Use the starter snippets in `../stacks/astro.md` ("Header, Footer, and placeholder home") or `../stacks/vite.md` ("Header, Footer, and placeholder home"). Each file contains:
+Use the starter snippets in `../stacks/astro.md` ("Header, Footer, and placeholder home") or `../stacks/vite.md` ("Header, Footer, and placeholder home"). Each file has a `<!-- PAGES:START -->` / `<!-- PAGES:END -->` marker pair the agent edits when pages are added (empty list is correct at scaffold time).
 
-- A `<!-- PAGES:START -->` / `<!-- PAGES:END -->` marker pair the agent edits when pages are added. The empty link list is correct at scaffold time.
-- For the placeholder home only: a `<!-- placeholder home: true -->` marker at the top so the agent can detect it and remove it when the designer wireframes the real home.
+Then pick the index flavor based on whether step 2 produced `site-architecture.md`:
+
+- **Architecture present** → scaffold the **rich status index**. Source the page list from `site-architecture.md` and render the Wireframe + UI columns. Snippet: `../stacks/astro.md` "Rich status index" or `../stacks/vite.md` "Rich status index". Includes the `<!-- placeholder home: true -->` marker so it can still be detected and replaced when the designer wireframes the real home.
+- **No architecture** → scaffold the **simple placeholder home** (a centered list of links). Snippet: same stack file, "Header, Footer, and placeholder home" section, third snippet.
+
+Both flavors carry the `<!-- placeholder home: true -->` marker and are replaced the moment the designer wireframes the real home page (see SKILL.md "Header, Footer, and the home placeholder").
 
 Wire `Header` and `Footer` into the shared template (`PageShell.astro` / `page-shell.html`) so every page renders them automatically. Pages must never include `Header` / `Footer` directly.
 

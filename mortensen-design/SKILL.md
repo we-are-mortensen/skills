@@ -157,6 +157,30 @@ Never restructure the markup outside the markers; only the inside changes.
 
 Scaffold snippets and the home-replacement rule live in `references/stacks/{astro,vite}.md`. Mode N creates all three files; Mode A and Mode B keep them in sync.
 
+### Page status — three states, designer-driven transitions
+
+When `site-architecture.md` exists, every page row carries two status columns: **Wireframe** and **UI**. Each has three states:
+
+| State | Meaning |
+|---|---|
+| **To do** | Not started. |
+| **Pending validation** | The agent has produced the work; the designer has not yet verified it in their own browser. |
+| **Validated** | The designer has signed off on this fidelity for this page. |
+
+The page table in `site-architecture.md` is the single source of truth. The project index (`src/pages/index.astro` for Astro, `src/views/index.html` for Vite) renders those statuses — Astro reads the markdown at build via `?raw`; Vite has the agent re-sync marker-bracketed rows in the same turn the status changes.
+
+**Transitions** — these are the only times the agent edits a status cell:
+
+- **Implicit (agent-driven, end of Phase 2):**
+  - Mode A Phase 2 completes for a page → `Wireframe`: `To do` → `Pending validation`.
+  - Mode B Phase 2 completes for a page → `UI`: `To do` → `Pending validation`.
+- **Explicit (designer-driven):**
+  - "wireframe for `<page>` is good / validated / approved / looks good, let's hi-fi it" → `Wireframe`: `Pending validation` → `Validated`.
+  - "UI / hi-fi for `<page>` is good / validated / ready for handoff" → `UI`: `Pending validation` → `Validated`.
+  - "the wireframe needs rework / let's iterate again on `<page>`" → roll back to `Pending validation` (never silently to `To do`).
+
+When a new page is added mid-project via Mode D's "Updating the architecture", initialise both columns to `To do`.
+
 ### Visual validation is the designer's job
 
 After `npm run build` succeeds and `npm run dev` is up, **stop and hand off to the designer**. Print a short "ready — please verify at 375 / 768 / 1024 / 1440" message and wait for their feedback.

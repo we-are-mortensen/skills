@@ -147,15 +147,17 @@ Source: <FigJam URL | PNG @path | typed | crawl of <url>>
 
 ## Pages
 
-| Route          | Parent     | Title       | Description                                              |
-|----------------|------------|-------------|----------------------------------------------------------|
-| `/`            | —          | Home        | Landing page; hero + featured events + contact CTA.      |
-| `/about`       | `/`        | About       | Mission, story, leadership snapshot.                     |
-| `/about/team`  | `/about`   | Team        | Member directory with photo + bio.                       |
-| `/about/press` | `/about`   | Press       | Press releases and media kit.                            |
-| `/events`      | `/`        | Events      | Upcoming events grid with filters.                       |
-| `/events/past` | `/events`  | Past events | Archive of completed events.                             |
-| `/contact`     | `/`        | Contact     | Inquiry form + office locations.                         |
+| Route          | Parent     | Title       | Description                                              | Wireframe | UI    |
+|----------------|------------|-------------|----------------------------------------------------------|-----------|-------|
+| `/`            | —          | Home        | Landing page; hero + featured events + contact CTA.      | To do     | To do |
+| `/about`       | `/`        | About       | Mission, story, leadership snapshot.                     | To do     | To do |
+| `/about/team`  | `/about`   | Team        | Member directory with photo + bio.                       | To do     | To do |
+| `/about/press` | `/about`   | Press       | Press releases and media kit.                            | To do     | To do |
+| `/events`      | `/`        | Events      | Upcoming events grid with filters.                       | To do     | To do |
+| `/events/past` | `/events`  | Past events | Archive of completed events.                             | To do     | To do |
+| `/contact`     | `/`        | Contact     | Inquiry form + office locations.                         | To do     | To do |
+
+The **Wireframe** and **UI** cells track progress per page. Three states each: `To do`, `Pending validation`, `Validated`. See SKILL.md "Page status" for the transition rules — Mode A and Mode B edit these cells; never edit them by hand unless re-baselining scope.
 
 ## Notes
 
@@ -165,6 +167,8 @@ Source: <FigJam URL | PNG @path | typed | crawl of <url>>
 ```
 
 The **table** is the source of truth — every page the project will build has exactly one row. The **tree** is a human-readable companion; keep it in sync but don't treat it as authoritative.
+
+The project's index page (Astro: `src/pages/index.astro`; Vite: `src/views/index.html`) reads this table and renders the Wireframe + UI statuses per row. See `../stacks/astro.md` and `../stacks/vite.md` ("Rich status index") for the scaffolds.
 
 ---
 
@@ -185,7 +189,7 @@ The doc is plain markdown so it stays diffable, readable, and editable by hand. 
 
 When the designer says "let's add `/blog`" or "the press page is dropping", they're updating the scope. Two options:
 
-- **Inline update** — the skill edits `site-architecture.md` as part of the same conversation that created the new page (or before deleting one). Update the table, the tree, the "Last updated" date, and the notes section if relevant.
+- **Inline update** — the skill edits `site-architecture.md` as part of the same conversation that created the new page (or before deleting one). Update the table, the tree, the "Last updated" date, and the notes section if relevant. New rows initialize `Wireframe` and `UI` to `To do`.
 - **Re-run Mode D** — if the structural change is large (a whole section being added or reorganized), it's cleaner to re-enter Mode D with the updated input rather than patching the doc piecemeal. Same workflow, same close-out.
 
 Either path is valid. Choose based on the size of the change.

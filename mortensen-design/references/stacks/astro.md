@@ -222,6 +222,113 @@ Insert at the end of the list, preserving existing entries and the marker lines.
 
 ---
 
+## Rich status index (when `site-architecture.md` exists)
+
+If Mode N produced a `site-architecture.md`, replace the simple placeholder above with this version. It reads the architecture markdown at build time via `?raw`, parses the **Pages** table, and renders rows with `Wireframe` / `UI` status badges using lo-fi tokens.
+
+```astro
+---
+// src/pages/index.astro — rich status index (placeholder home)
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import architectureMd from '../../site-architecture.md?raw';
+
+interface PageRow {
+  route: string;
+  parent: string;
+  title: string;
+  description: string;
+  wireframe: string;
+  ui: string;
+}
+
+function parsePagesTable(md: string): PageRow[] {
+  const lines = md.split('\n');
+  const sectionStart = lines.findIndex((l) => l.trim().toLowerCase().startsWith('## pages'));
+  if (sectionStart === -1) return [];
+
+  let headerIdx = -1;
+  for (let i = sectionStart + 1; i < lines.length; i++) {
+    const t = lines[i].trim();
+    if (t.startsWith('## ')) break;
+    if (t.startsWith('|')) { headerIdx = i; break; }
+  }
+  if (headerIdx === -1) return [];
+
+  const rows: PageRow[] = [];
+  for (let i = headerIdx + 2; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line.startsWith('|')) break;
+    const cells = line.split('|').slice(1, -1).map((c) => c.trim().replace(/`/g, ''));
+    if (cells.length < 6) continue;
+    rows.push({
+      route: cells[0],
+      parent: cells[1],
+      title: cells[2],
+      description: cells[3],
+      wireframe: cells[4],
+      ui: cells[5],
+    });
+  }
+  return rows;
+}
+
+const pages = parsePagesTable(architectureMd);
+
+const badgeClasses = (state: string) => {
+  const s = state.toLowerCase();
+  if (s.includes('validated')) return 'bg-lo-text text-lo-bg';
+  if (s.includes('pending'))   return 'border border-lo-text text-lo-text bg-lo-surface';
+  return 'border border-lo-border text-lo-text-muted bg-lo-bg';
+};
+---
+<!-- placeholder home: true -->
+<BaseLayout title="Project index">
+  <main id="main" class="container-fluid py-16">
+    <h1 class="text-2xl md:text-3xl font-semibold text-lo-text">Project index</h1>
+    <p class="mt-4 text-sm text-lo-text-muted">
+      Status from <code class="font-mono">site-architecture.md</code>. Temporary index while the home wireframe is in progress — replaced when the real home is wireframed.
+    </p>
+
+    <section class="mt-12">
+      <table class="w-full border-t border-lo-border">
+        <thead>
+          <tr class="text-left text-xs uppercase tracking-widest text-lo-text-muted">
+            <th class="py-3 pr-4">Page</th>
+            <th class="py-3 pr-4">Path</th>
+            <th class="py-3 pr-4">Wireframe</th>
+            <th class="py-3 pr-4">UI</th>
+          </tr>
+        </thead>
+        <tbody>
+          {pages.map((p) => (
+            <tr class="border-t border-lo-border">
+              <td class="py-3 pr-4">
+                <a href={p.route} class="font-medium text-lo-text hover:text-lo-text-muted">{p.title}</a>
+              </td>
+              <td class="py-3 pr-4 font-mono text-sm text-lo-text-muted">{p.route}</td>
+              <td class="py-3 pr-4">
+                <span class:list={['inline-block px-2 py-0.5 rounded text-xs', badgeClasses(p.wireframe)]}>{p.wireframe}</span>
+              </td>
+              <td class="py-3 pr-4">
+                <span class:list={['inline-block px-2 py-0.5 rounded text-xs', badgeClasses(p.ui)]}>{p.ui}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</BaseLayout>
+```
+
+The `?raw` import resolves at build time. After Mode A / Mode B updates a status cell in `site-architecture.md`, Astro's dev server picks it up on the next reload — no edit to `index.astro` is needed.
+
+If `site-architecture.md` is deleted, the build fails on the `?raw` import — that's intentional. The rich index requires architecture; remove the rich index (or replace it with the simple placeholder) if the project deliberately drops architecture tracking.
+
+When the designer wireframes the home page, overwrite the whole file the same way as the simple placeholder — drops the `placeholder home: true` marker and the architecture-reading code.
+
+---
+
 ## Hi-fi imagery
 
 Use Astro's built-in image component for optimization:

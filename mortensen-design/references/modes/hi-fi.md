@@ -80,6 +80,8 @@ Components stay the same; styles and motion change. Do not restructure unless th
    - `npm run dev` — print the dev URL and ask the designer to verify at **375 / 768 / 1024 / 1440** in their own browser, paying special attention to contrast, focus states, and motion at each breakpoint.
    - Do not auto-invoke Chrome MCP / Playwright / Claude for Chrome. If the designer flags a visual issue and asks for inspection, then use browser tools (see SKILL.md "Visual validation").
 
+10. **Bump page status to `Pending validation`** (only if `site-architecture.md` exists). In its Pages table, find the row whose `Route` matches this page and change the `UI` cell to `Pending validation`. Do not touch the `Wireframe` cell. For Vite, also re-sync the matching `<tr>` inside the `<!-- ROWS:START --> … <!-- ROWS:END -->` markers of `src/views/index.html` in the same turn.
+
 ---
 
 ## Iteration loop
@@ -90,6 +92,11 @@ Expect multiple rounds. Each round:
 - Designer gives notes ("tighten the hero margin at lg:", "swap the secondary button to ghost", "the gradient is too aggressive").
 - Apply notes, rebuild, revalidate.
 - Repeat until the designer says **"ready for coder"** — at which point run `../handoff-checklist.md`.
+
+**Status transitions during iteration** (only if `site-architecture.md` exists):
+
+- Designer signs off on the visual ("UI approved", "hi-fi looks good", "validated", "ready for coder") → set this page's `UI` cell to `Validated`. For Vite, also re-sync the row in `src/views/index.html`.
+- Designer asks for rework after a previous validation → roll the `UI` cell back to `Pending validation`. Never silently to `To do`.
 
 Multiple directions can be explored in parallel branches if the designer wants a side-by-side comparison. Use git worktrees or duplicated page files for that — confirm with the designer.
 

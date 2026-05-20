@@ -220,6 +220,67 @@ Insert at the end of the list, preserving existing entries and the marker lines.
 
 ---
 
+## Rich status index (when `site-architecture.md` exists)
+
+If Mode N produced a `site-architecture.md`, replace the simple placeholder above with this version. Vite serves static HTML, so the architecture markdown can't be parsed at request time the way Astro does. Instead, the table body is **agent-maintained**: bracketed by `<!-- ROWS:START -->` / `<!-- ROWS:END -->` markers, with one `<tr>` per page. The agent writes these rows on scaffold, and re-syncs the matching row whenever it edits a status cell in `site-architecture.md`.
+
+```html
+<!-- src/views/index.html — rich status index (placeholder home) -->
+<!-- placeholder home: true -->
+<include src="layouts/base.html" locals='{ "title": "Project index", "fidelity": "lo" }'>
+  <main id="main" class="container-fluid py-16">
+    <h1 class="text-2xl md:text-3xl font-semibold text-lo-text">Project index</h1>
+    <p class="mt-4 text-sm text-lo-text-muted">
+      Status mirrors <code class="font-mono">site-architecture.md</code>. Temporary index while the home wireframe is in progress — replaced when the real home is wireframed.
+    </p>
+
+    <section class="mt-12">
+      <table class="w-full border-t border-lo-border">
+        <thead>
+          <tr class="text-left text-xs uppercase tracking-widest text-lo-text-muted">
+            <th class="py-3 pr-4">Page</th>
+            <th class="py-3 pr-4">Path</th>
+            <th class="py-3 pr-4">Wireframe</th>
+            <th class="py-3 pr-4">UI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- ROWS:START -->
+          <!-- One <tr> per page, mirroring site-architecture.md. Example: -->
+          <!--
+          <tr class="border-t border-lo-border">
+            <td class="py-3 pr-4"><a href="/events.html" class="font-medium text-lo-text hover:text-lo-text-muted">Events</a></td>
+            <td class="py-3 pr-4 font-mono text-sm text-lo-text-muted">/events</td>
+            <td class="py-3 pr-4"><span class="inline-block px-2 py-0.5 rounded text-xs border border-lo-border text-lo-text-muted bg-lo-bg">To do</span></td>
+            <td class="py-3 pr-4"><span class="inline-block px-2 py-0.5 rounded text-xs border border-lo-border text-lo-text-muted bg-lo-bg">To do</span></td>
+          </tr>
+          -->
+          <!-- ROWS:END -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+</include>
+```
+
+**Badge classes by state** (apply to the `<span>` inside each status cell):
+
+| State | Classes |
+|---|---|
+| `To do` | `border border-lo-border text-lo-text-muted bg-lo-bg` |
+| `Pending validation` | `border border-lo-text text-lo-text bg-lo-surface` |
+| `Validated` | `bg-lo-text text-lo-bg` |
+
+**Maintenance rule**: when the agent updates a status cell in `site-architecture.md`, it must in the same turn:
+1. Locate the matching `<tr>` in `src/views/index.html` (between the markers).
+2. Update the badge class and the label text in the relevant `<td>`.
+
+Never restructure markup outside `<!-- ROWS:START -->` / `<!-- ROWS:END -->`. New pages added via "Mode D updating the architecture" require a fresh `<tr>` appended between the markers.
+
+When the designer wireframes the home page, overwrite the whole file the same way as the simple placeholder — drops the marker and the row block.
+
+---
+
 ## Hi-fi imagery
 
 Use `<img>` with explicit dimensions and `loading="lazy"` to prevent CLS and defer offscreen images:
