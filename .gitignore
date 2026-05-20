@@ -3,3 +3,4 @@ node_modules/
 *.log
 .idea/
 .vscode/
+files-for-claude/
