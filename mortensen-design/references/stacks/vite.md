@@ -155,6 +155,71 @@ Inside `page-shell.html`, use `<content></content>` (or the equivalent `<yield>`
 
 ---
 
+## Header, Footer, and placeholder home
+
+Same role as the Astro versions — scaffolded in Mode N, edited via `<!-- PAGES:START -->` / `<!-- PAGES:END -->` markers as pages are created. Agents append `<a>` links inside the markers and never touch the surrounding HTML.
+
+```html
+<!-- src/components/organisms/header.html -->
+<header class="container-fluid border-b border-lo-border py-4">
+  <div class="grid-standard items-center">
+    <a href="/" class="col-span-4 md:col-span-3 font-semibold text-lo-text">Site</a>
+    <nav class="col-span-4 md:col-span-9 flex justify-end gap-6 text-sm text-lo-text-muted">
+      <!-- PAGES:START -->
+      <!-- PAGES:END -->
+    </nav>
+  </div>
+</header>
+```
+
+```html
+<!-- src/components/organisms/footer.html -->
+<footer class="container-fluid border-t border-lo-border py-8 mt-16">
+  <div class="grid-standard">
+    <nav class="col-span-8 md:col-span-12 flex flex-wrap gap-6 text-sm text-lo-text-muted">
+      <!-- PAGES:START -->
+      <!-- PAGES:END -->
+    </nav>
+  </div>
+</footer>
+```
+
+```html
+<!-- src/views/index.html — placeholder home -->
+<!-- placeholder home: true -->
+<include src="layouts/base.html" locals='{ "title": "Home — placeholder", "fidelity": "lo" }'>
+  <main id="main" class="container-fluid py-24">
+    <div class="grid-standard">
+      <section class="col-span-8 md:col-span-8 md:col-start-3 text-center">
+        <h1 class="text-2xl font-semibold text-lo-text mb-4">Page directory</h1>
+        <p class="text-sm text-lo-text-muted mb-8">
+          Temporary index while the home wireframe is in progress. It is replaced
+          the moment a real home page is wireframed.
+        </p>
+        <ul class="flex flex-col gap-2 text-sm text-lo-text">
+          <!-- PAGES:START -->
+          <!-- PAGES:END -->
+        </ul>
+      </section>
+    </div>
+  </main>
+</include>
+```
+
+**Appending a page link** (inside `PAGES:START` / `PAGES:END`):
+
+```html
+<a href="/events.html" class="hover:underline">Events</a>
+```
+
+Insert at the end of the list, preserving existing entries and the marker lines. Note that Vite serves pages at `/<name>.html` unless your config rewrites them; pick href values that match your routing.
+
+**When the designer wireframes the home page**: overwrite `src/views/index.html` entirely with the real home wireframe (drops the `placeholder home: true` marker and the page-list), then prepend `<a href="/" class="hover:underline">Home</a>` inside the `PAGES` markers in `header.html` and `footer.html` if it isn't already there.
+
+> Vite's multi-page build only bundles files listed in `rollupOptions.input`. `index.html` is normally included by default; verify after scaffolding.
+
+---
+
 ## Hi-fi imagery
 
 Use `<img>` with explicit dimensions and `loading="lazy"` to prevent CLS and defer offscreen images:

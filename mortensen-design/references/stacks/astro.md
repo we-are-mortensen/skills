@@ -152,6 +152,76 @@ A template (`PageShell.astro`) typically wraps `BaseLayout` and adds shared orga
 
 ---
 
+## Header, Footer, and placeholder home
+
+These three files are scaffolded in Mode N and updated by Mode A / Mode B whenever a page is created. The `<!-- PAGES:START -->` / `<!-- PAGES:END -->` markers are the only editing points — agents append `<a>` links inside, never restructure the surrounding HTML.
+
+```astro
+---
+// src/components/organisms/Header.astro
+---
+<header class="container-fluid border-b border-lo-border py-4">
+  <div class="grid-standard items-center">
+    <a href="/" class="col-span-4 md:col-span-3 font-semibold text-lo-text">Site</a>
+    <nav class="col-span-4 md:col-span-9 flex justify-end gap-6 text-sm text-lo-text-muted">
+      <!-- PAGES:START -->
+      <!-- PAGES:END -->
+    </nav>
+  </div>
+</header>
+```
+
+```astro
+---
+// src/components/organisms/Footer.astro
+---
+<footer class="container-fluid border-t border-lo-border py-8 mt-16">
+  <div class="grid-standard">
+    <nav class="col-span-8 md:col-span-12 flex flex-wrap gap-6 text-sm text-lo-text-muted">
+      <!-- PAGES:START -->
+      <!-- PAGES:END -->
+    </nav>
+  </div>
+</footer>
+```
+
+```astro
+---
+// src/pages/index.astro — placeholder home
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+<!-- placeholder home: true -->
+<BaseLayout title="Home — placeholder">
+  <main id="main" class="container-fluid py-24">
+    <div class="grid-standard">
+      <section class="col-span-8 md:col-span-8 md:col-start-3 text-center">
+        <h1 class="text-2xl font-semibold text-lo-text mb-4">Page directory</h1>
+        <p class="text-sm text-lo-text-muted mb-8">
+          Temporary index while the home wireframe is in progress. It is replaced
+          the moment a real home page is wireframed.
+        </p>
+        <ul class="flex flex-col gap-2 text-sm text-lo-text">
+          <!-- PAGES:START -->
+          <!-- PAGES:END -->
+        </ul>
+      </section>
+    </div>
+  </main>
+</BaseLayout>
+```
+
+**Appending a page link** (inside `PAGES:START` / `PAGES:END`):
+
+```html
+<a href="/events/" class="hover:underline">Events</a>
+```
+
+Insert at the end of the list, preserving existing entries and the marker lines.
+
+**When the designer wireframes the home page**: overwrite `src/pages/index.astro` entirely with the real home wireframe (drops the `placeholder home: true` marker and the page-list), then prepend `<a href="/" class="hover:underline">Home</a>` inside the `PAGES` markers in `Header.astro` and `Footer.astro` if it isn't already there.
+
+---
+
 ## Hi-fi imagery
 
 Use Astro's built-in image component for optimization:

@@ -201,7 +201,24 @@ Use the layout shape from the stack reference (`../stacks/astro.md` for Astro, `
 
 The layout is the single place the variant sidebar is wired. Pages never include it.
 
-### 7. Copy the variant sidebar assets into the project
+### 7. Scaffold `Header`, `Footer`, and the placeholder home
+
+These three files are the project's nav scaffolding. They start with empty link lists; pages are appended as they're wireframed (Mode A / Mode B keep them in sync — see SKILL.md "Header, Footer, and the home placeholder").
+
+Create:
+
+- `Header` organism — `src/components/organisms/Header.astro` (Astro) or `src/components/organisms/header.html` (Vite).
+- `Footer` organism — `src/components/organisms/Footer.astro` or `src/components/organisms/footer.html`.
+- Placeholder home — `src/pages/index.astro` (Astro) or `src/views/index.html` (Vite).
+
+Use the starter snippets in `../stacks/astro.md` ("Header, Footer, and placeholder home") or `../stacks/vite.md` ("Header, Footer, and placeholder home"). Each file contains:
+
+- A `<!-- PAGES:START -->` / `<!-- PAGES:END -->` marker pair the agent edits when pages are added. The empty link list is correct at scaffold time.
+- For the placeholder home only: a `<!-- placeholder home: true -->` marker at the top so the agent can detect it and remove it when the designer wireframes the real home.
+
+Wire `Header` and `Footer` into the shared template (`PageShell.astro` / `page-shell.html`) so every page renders them automatically. Pages must never include `Header` / `Footer` directly.
+
+### 8. Copy the variant sidebar assets into the project
 
 From this skill's `assets/`:
 
@@ -210,7 +227,7 @@ From this skill's `assets/`:
 
 The script is loaded via `<script src="/scripts/variant-sidebar.js" defer></script>` inside the same dev gate as the sidebar markup (already shown in `../variants.md`).
 
-### 8. Verify
+### 9. Verify
 
 ```bash
 npm run dev
@@ -231,7 +248,7 @@ Print a summary that confirms what's ready and asks for the first page:
 > - Stack: `<Astro | Vite>`, dev server: `<http://localhost:4321 | http://localhost:5173>`
 > - `project-brief.md` written.
 > - `site-architecture.md` <written with N pages | not yet defined>.
-> - Atomic structure, lo-fi tokens, container-fluid, grid-standard, BaseLayout, variant sidebar — all wired.
+> - Atomic structure, lo-fi tokens, container-fluid, grid-standard, BaseLayout, variant sidebar, Header / Footer / placeholder home — all wired.
 >
 > Ready to wireframe. Which page first?
 

@@ -71,7 +71,11 @@ Components stay the same; styles and motion change. Do not restructure unless th
    - 🅐 Astro: render the Three.js island with `client:visible`.
    - 🅥 Vite: dynamic `import()` triggered by an `IntersectionObserver`.
    - Provide a static poster image as a fallback. Lazy-load all Three.js modules.
-8. **Build & hand off for verification**:
+8. **Link the page (if new, renamed, or first-time home)**. Most hi-fi work upgrades a page that already exists in `Header` / `Footer` nav — in that case, leave the nav alone. But:
+   - **New hi-fi page** (no lo-fi predecessor) — append it to `Header` and `Footer` inside the `<!-- PAGES:START --> … <!-- PAGES:END -->` markers.
+   - **Display label changed** at hi-fi — update the link text in both Header and Footer (and in the placeholder home if it's still present). Never restructure the markup outside the markers.
+   - **This hi-fi IS the home and the placeholder home is still present** (`<!-- placeholder home: true -->` in the project's index file) — follow the home-replacement rule from `lo-fi.md` step 7: overwrite `index.astro` / `index.html` with the home wireframe and prepend `Home → /` to the `PAGES` markers in Header + Footer.
+9. **Build & hand off for verification**:
    - `npm run build` (fix any errors)
    - `npm run dev` — print the dev URL and ask the designer to verify at **375 / 768 / 1024 / 1440** in their own browser, paying special attention to contrast, focus states, and motion at each breakpoint.
    - Do not auto-invoke Chrome MCP / Playwright / Claude for Chrome. If the designer flags a visual issue and asks for inspection, then use browser tools (see SKILL.md "Visual validation").

@@ -139,6 +139,24 @@ The fidelity switch is `data-fidelity="lo"` / `data-fidelity="hi"` on `<body>`. 
 
 Lo-fi token CSS to drop into app.css: `assets/lo-fi-tokens.css`.
 
+### Header, Footer, and the home placeholder carry the page menu
+
+The site always has a `Header` and `Footer` organism. Each contains a `<nav>` bracketed by marker comments — `<!-- PAGES:START -->` … `<!-- PAGES:END -->` — that lists every wireframed page.
+
+Until the home page is wireframed, the project's index file (`src/pages/index.astro` for Astro, `src/views/index.html` for Vite) is a **placeholder home**: a centered list of links to currently-wireframed pages, bracketed by the same `PAGES:START` / `PAGES:END` markers, and tagged with `<!-- placeholder home: true -->` so the agent can detect it.
+
+**Whenever a new page is wireframed (Mode A or Mode B), the same turn must edit — inside the markers — three places**:
+
+1. `Header` organism — append `<a href="/<slug>/">Label</a>`.
+2. `Footer` organism — same.
+3. The placeholder home — only if `<!-- placeholder home: true -->` is still present.
+
+Never restructure the markup outside the markers; only the inside changes.
+
+**When the designer wireframes `home`** (or any page that resolves to `/`): replace the placeholder home with the real wireframe — drop the `placeholder home: true` marker and its page-list — then prepend `Home → /` to the `Header` and `Footer` nav if it isn't already there. From then on, page creation only updates `Header` and `Footer`.
+
+Scaffold snippets and the home-replacement rule live in `references/stacks/{astro,vite}.md`. Mode N creates all three files; Mode A and Mode B keep them in sync.
+
 ### Visual validation is the designer's job
 
 After `npm run build` succeeds and `npm run dev` is up, **stop and hand off to the designer**. Print a short "ready — please verify at 375 / 768 / 1024 / 1440" message and wait for their feedback.

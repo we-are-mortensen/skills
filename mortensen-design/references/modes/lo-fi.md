@@ -130,11 +130,15 @@ Once the plan is approved:
    ```
 5. **A11y basics (lo-fi)**: semantic HTML elements, meaningful headings (one `<h1>`; no skipped levels), `alt` on every `<img>`, `<label>` on every form input, focusable controls are real buttons/links.
 6. **No polish**: no shadows, gradients, animations, transitions, or hover micro-interactions. Flat, structural.
-7. **Build & dev**:
+7. **Link the page**. The same turn that creates a page must add it to the site nav (see SKILL.md "Header, Footer, and the home placeholder"):
+   - Append `<a href="/<slug>/">Label</a>` inside the `<!-- PAGES:START --> … <!-- PAGES:END -->` markers in `Header` and `Footer`. Never edit anything outside the markers.
+   - If the placeholder home is still present (`<!-- placeholder home: true -->` in the project's index file), append the same link inside its `PAGES:START` / `PAGES:END` markers too.
+   - **If this page IS the home** (route `/`, or the designer asks to wireframe `home` / `Home` / `index`): overwrite the placeholder index file (`src/pages/index.astro` for Astro, `src/views/index.html` for Vite) with the new home wireframe — dropping the `placeholder home: true` marker and its page-list — then prepend `Home → /` to the `PAGES` markers in `Header` and `Footer` if it isn't already there. From now on, page creation only updates `Header` and `Footer`.
+8. **Build & dev**:
    - 🅐 Astro: `npm run build` then `npm run dev` (http://localhost:4321)
    - 🅥 Vite: `npm run build` then `npm run dev` (http://localhost:5173)
    Fix any build error before continuing.
-8. **Hand off to designer for verification**. Print a short message:
+9. **Hand off to designer for verification**. Print a short message:
    > Ready at `<dev URL>`. Please verify at **375 / 768 / 1024 / 1440** — check that the hierarchy holds, no horizontal scroll, content fits. Tell me what to adjust.
 
    Do not run Chrome MCP / Playwright / Claude for Chrome on your own. If the designer reports a visual bug *and asks for inspection*, then invoke browser tools — see SKILL.md "Visual validation".

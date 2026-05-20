@@ -4,7 +4,8 @@
       "Bash(npm view *)",
       "Read(//private/tmp/skills-inspect/**)",
       "Bash(tar -xzf skills-1.5.6.tgz)",
-      "Bash(node test-yaml.mjs)"
+      "Bash(node test-yaml.mjs)",
+      "Skill(superpowers:brainstorming)"
     ]
   }
 }
