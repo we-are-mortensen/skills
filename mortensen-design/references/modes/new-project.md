@@ -221,12 +221,13 @@ Both flavors carry the `<!-- placeholder home: true -->` marker and are replaced
 
 Wire `Header` and `Footer` into the shared template (`PageShell.astro` / `page-shell.html`) so every page renders them automatically. Pages must never include `Header` / `Footer` directly.
 
-### 8. Copy the variant sidebar assets into the project
+### 8. Copy skill assets into the project
 
 From this skill's `assets/`:
 
 - `variant-sidebar.html` → `src/components/_dev/VariantSidebar.astro` (Astro) or `src/components/_dev/variant-sidebar.html` (Vite). Wrap the HTML in an Astro component declaration for Astro.
 - `variant-sidebar.js` → `public/scripts/variant-sidebar.js` (both stacks).
+- `mortensen.png` → `public/assets/mortensen.png` (both stacks). The placeholder home / rich status index references this at `/assets/mortensen.png`.
 
 The script is loaded via `<script src="/scripts/variant-sidebar.js" defer></script>` inside the same dev gate as the sidebar markup (already shown in `../variants.md`).
 

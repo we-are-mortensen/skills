@@ -14,11 +14,18 @@ src/
 │   ├── organisms/    # header.html, footer.html, event-grid.html, …
 │   └── templates/    # page-shell.html, dashboard-layout.html, …
 ├── layouts/          # base.html (HTML doc shell, links app.css)
-├── views/            # index.html, events.html (one HTML file per page; each is a Vite entry)
+├── views/
+│   ├── index.html    # placeholder home OR lo-fi home (route: /)
+│   ├── events.html   # lo-fi page (route: /events.html)
+│   └── ui/           # hi-fi copies, parallel route tree (/ui/…)
+│       ├── index.html
+│       └── events.html
 └── styles/
     └── app.css
 vite.config.ts        # multi-page input + posthtml-include plugin
 ```
+
+The `ui/` subtree mirrors the lo-fi tree one-for-one — every hi-fi page has a lo-fi counterpart at the same relative path. Mode B copies lo-fi → `ui/` before promotion; the lo-fi file is never touched after that. See SKILL.md "Lo-fi and hi-fi are separate files".
 
 - **Filenames**: kebab-case (`event-grid.html`), one component per file.
 - **Page entries**: each file in `src/views/*.html` is its own Vite entry — they must be listed in `rollupOptions.input` in `vite.config.ts`.
@@ -191,6 +198,7 @@ Same role as the Astro versions — scaffolded in Mode N, edited via `<!-- PAGES
   <main id="main" class="container-fluid py-24">
     <div class="grid-standard">
       <section class="col-span-8 md:col-span-8 md:col-start-3 text-center">
+        <img src="/assets/mortensen.png" alt="Mortensen" class="h-8 mx-auto mb-6" />
         <h1 class="text-2xl font-semibold text-lo-text mb-4">Page directory</h1>
         <p class="text-sm text-lo-text-muted mb-8">
           Temporary index while the home wireframe is in progress. It is replaced
@@ -229,6 +237,7 @@ If Mode N produced a `site-architecture.md`, replace the simple placeholder abov
 <!-- placeholder home: true -->
 <include src="layouts/base.html" locals='{ "title": "Project index", "fidelity": "lo" }'>
   <main id="main" class="container-fluid py-16">
+    <img src="/assets/mortensen.png" alt="Mortensen" class="h-8 mb-6" />
     <h1 class="text-2xl md:text-3xl font-semibold text-lo-text">Project index</h1>
     <p class="mt-4 text-sm text-lo-text-muted">
       Status mirrors <code class="font-mono">site-architecture.md</code>. Temporary index while the home wireframe is in progress — replaced when the real home is wireframed.
@@ -246,12 +255,12 @@ If Mode N produced a `site-architecture.md`, replace the simple placeholder abov
         </thead>
         <tbody>
           <!-- ROWS:START -->
-          <!-- One <tr> per page, mirroring site-architecture.md. Example: -->
+          <!-- One <tr> per page, mirroring site-architecture.md. Status cells are <a> if started, <span> if "To do". Wireframe links to lo-fi route, UI links to /ui/<route>. Example: -->
           <!--
           <tr class="border-t border-lo-border">
             <td class="py-3 pr-4"><a href="/events.html" class="font-medium text-lo-text hover:text-lo-text-muted">Events</a></td>
             <td class="py-3 pr-4 font-mono text-sm text-lo-text-muted">/events</td>
-            <td class="py-3 pr-4"><span class="inline-block px-2 py-0.5 rounded text-xs border border-lo-border text-lo-text-muted bg-lo-bg">To do</span></td>
+            <td class="py-3 pr-4"><a href="/events.html" class="inline-block px-2 py-0.5 rounded text-xs no-underline hover:opacity-80 border border-lo-text text-lo-text bg-lo-surface">Pending validation</a></td>
             <td class="py-3 pr-4"><span class="inline-block px-2 py-0.5 rounded text-xs border border-lo-border text-lo-text-muted bg-lo-bg">To do</span></td>
           </tr>
           -->
@@ -273,9 +282,11 @@ If Mode N produced a `site-architecture.md`, replace the simple placeholder abov
 
 **Maintenance rule**: when the agent updates a status cell in `site-architecture.md`, it must in the same turn:
 1. Locate the matching `<tr>` in `src/views/index.html` (between the markers).
-2. Update the badge class and the label text in the relevant `<td>`.
+2. Update the badge class **and** the label text in the relevant `<td>`.
+3. If the status crossed the `To do` → `Pending validation` boundary, swap the cell from `<span>` to `<a>` with the correct href: Wireframe cells link to the lo-fi route; UI cells link to `/ui<route>`.
+4. If the status rolled back to `To do` (rare), swap the `<a>` back to `<span>`.
 
-Never restructure markup outside `<!-- ROWS:START -->` / `<!-- ROWS:END -->`. New pages added via "Mode D updating the architecture" require a fresh `<tr>` appended between the markers.
+Never restructure markup outside `<!-- ROWS:START -->` / `<!-- ROWS:END -->`. New pages added via "Mode D updating the architecture" require a fresh `<tr>` appended between the markers, with both status cells starting as `To do` `<span>`.
 
 When the designer wireframes the home page, overwrite the whole file the same way as the simple placeholder — drops the marker and the row block.
 
@@ -331,13 +342,25 @@ import { defineConfig } from 'vite';
 import posthtml from 'vite-plugin-posthtml';   // or equivalent
 import posthtmlInclude from 'posthtml-include';
 import posthtmlExpressions from 'posthtml-expressions';
-import { resolve } from 'node:path';
+import { resolve, relative } from 'node:path';
 import { readdirSync } from 'node:fs';
 
 const viewsDir = resolve(__dirname, 'src/views');
-const views = readdirSync(viewsDir).filter(f => f.endsWith('.html'));
+
+// Walk src/views/ recursively so both lo-fi and ui/ pages are picked up.
+function walkHtml(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = resolve(dir, entry.name);
+    if (entry.isDirectory()) return walkHtml(full);
+    return entry.isFile() && entry.name.endsWith('.html') ? [full] : [];
+  });
+}
+
 const input = Object.fromEntries(
-  views.map(file => [file.replace(/\.html$/, ''), resolve(viewsDir, file)])
+  walkHtml(viewsDir).map((file) => {
+    const key = relative(viewsDir, file).replace(/\.html$/, '').replace(/[\\/]/g, '__');
+    return [key, file];
+  })
 );
 
 export default defineConfig({
@@ -357,6 +380,8 @@ export default defineConfig({
   ],
 });
 ```
+
+`ui/events.html` produces an entry keyed `ui__events`; its dev URL is `/ui/events.html`. Adjust the routing/output settings if your project rewrites `.html` away from URLs.
 
 The exact plugin name and configuration depend on the project's chosen Vite + posthtml integration. Verify with `package.json` before scaffolding.
 

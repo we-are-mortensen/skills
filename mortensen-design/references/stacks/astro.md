@@ -14,10 +14,17 @@ src/
 │   ├── organisms/    # Header.astro, Footer.astro, EventGrid.astro, …
 │   └── templates/    # PageShell.astro, DashboardLayout.astro, …
 ├── layouts/          # BaseLayout.astro (HTML doc shell, imports app.css)
-├── pages/            # index.astro, events.astro (file-based routing)
+├── pages/
+│   ├── index.astro   # placeholder home OR lo-fi home (route: /)
+│   ├── events.astro  # lo-fi page (route: /events)
+│   └── ui/           # hi-fi copies, parallel route tree (/ui/…)
+│       ├── index.astro
+│       └── events.astro
 └── styles/
     └── app.css
 ```
+
+The `ui/` subtree mirrors the lo-fi tree one-for-one — every hi-fi page has a lo-fi counterpart at the same relative path. Mode B copies lo-fi → `ui/` before promotion; the lo-fi file is never touched after that. See SKILL.md "Lo-fi and hi-fi are separate files".
 
 - **Filenames**: PascalCase (`EventGrid.astro`), one component per file.
 - **Page routes**: file-based via `src/pages/*.astro` — Astro maps file path to URL.
@@ -195,6 +202,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   <main id="main" class="container-fluid py-24">
     <div class="grid-standard">
       <section class="col-span-8 md:col-span-8 md:col-start-3 text-center">
+        <img src="/assets/mortensen.png" alt="Mortensen" class="h-8 mx-auto mb-6" />
         <h1 class="text-2xl font-semibold text-lo-text mb-4">Page directory</h1>
         <p class="text-sm text-lo-text-muted mb-8">
           Temporary index while the home wireframe is in progress. It is replaced
@@ -280,13 +288,18 @@ const badgeClasses = (state: string) => {
   if (s.includes('pending'))   return 'border border-lo-text text-lo-text bg-lo-surface';
   return 'border border-lo-border text-lo-text-muted bg-lo-bg';
 };
+
+const isStarted = (state: string) => !state.toLowerCase().includes('to do');
+const uiHref = (route: string) =>
+  route === '/' ? '/ui/' : `/ui${route.startsWith('/') ? route : `/${route}`}`;
 ---
 <!-- placeholder home: true -->
 <BaseLayout title="Project index">
   <main id="main" class="container-fluid py-16">
+    <img src="/assets/mortensen.png" alt="Mortensen" class="h-8 mb-6" />
     <h1 class="text-2xl md:text-3xl font-semibold text-lo-text">Project index</h1>
     <p class="mt-4 text-sm text-lo-text-muted">
-      Status from <code class="font-mono">site-architecture.md</code>. Temporary index while the home wireframe is in progress — replaced when the real home is wireframed.
+      Status from <code class="font-mono">site-architecture.md</code>. Temporary index while the home wireframe is in progress — replaced when the real home is wireframed. The <strong>Wireframe</strong> badge links to the lo-fi route; the <strong>UI</strong> badge links to the UI route under <code class="font-mono">/ui/</code>.
     </p>
 
     <section class="mt-12">
@@ -307,10 +320,18 @@ const badgeClasses = (state: string) => {
               </td>
               <td class="py-3 pr-4 font-mono text-sm text-lo-text-muted">{p.route}</td>
               <td class="py-3 pr-4">
-                <span class:list={['inline-block px-2 py-0.5 rounded text-xs', badgeClasses(p.wireframe)]}>{p.wireframe}</span>
+                {isStarted(p.wireframe) ? (
+                  <a href={p.route} class:list={['inline-block px-2 py-0.5 rounded text-xs no-underline hover:opacity-80', badgeClasses(p.wireframe)]}>{p.wireframe}</a>
+                ) : (
+                  <span class:list={['inline-block px-2 py-0.5 rounded text-xs', badgeClasses(p.wireframe)]}>{p.wireframe}</span>
+                )}
               </td>
               <td class="py-3 pr-4">
-                <span class:list={['inline-block px-2 py-0.5 rounded text-xs', badgeClasses(p.ui)]}>{p.ui}</span>
+                {isStarted(p.ui) ? (
+                  <a href={uiHref(p.route)} class:list={['inline-block px-2 py-0.5 rounded text-xs no-underline hover:opacity-80', badgeClasses(p.ui)]}>{p.ui}</a>
+                ) : (
+                  <span class:list={['inline-block px-2 py-0.5 rounded text-xs', badgeClasses(p.ui)]}>{p.ui}</span>
+                )}
               </td>
             </tr>
           ))}

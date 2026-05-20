@@ -28,9 +28,9 @@ If any of (1)/(2)/(3) is missing, ask. Don't infer a palette from a Figma refere
 
 ### What "the lo-fi" can be
 
-- **A whole page** — most common. The page file plus all the components it transitively uses are upgraded together.
-- **A single organism / molecule / atom** — when promoting one piece in isolation. The wider page may stay lo-fi; only the targeted component goes hi-fi (uncommon but legitimate during exploration).
-- **A set of pages** — multiple lo-fi files at once. Treat as one Phase 1 (one direction proposal that covers all of them) so the visual language stays coherent.
+- **A whole page** — most common. Phase 2 step 0 copies the page to its `ui/<route>` counterpart; that copy is what gets upgraded. The lo-fi file stays at its canonical route.
+- **A set of pages** — multiple lo-fi files at once. Each page is copied into the `ui/` subtree separately; Phase 1 produces **one** direction proposal that covers all of them so the visual language stays coherent.
+- **A single organism / molecule / atom** — components stay fidelity-neutral (tokens switch off `<body data-fidelity>`). If a single component genuinely needs a visually different hi-fi treatment that would break its lo-fi rendering, express it as a **variant**, not a fork — see `../variants.md`. No copy step is needed; the variant lives alongside the existing component.
 
 ---
 
@@ -54,9 +54,13 @@ If any of (1)/(2)/(3) is missing, ask. Don't infer a palette from a Figma refere
 
 ## Phase 2 — Build the chosen direction
 
-Components stay the same; styles and motion change. Do not restructure unless the direction explicitly demands it.
+Components stay the same; styles and motion change. Do not restructure unless the direction explicitly demands it. The lo-fi file is never edited — Mode B works on a copy from step 0 onward.
 
-1. **Switch the layout's body attribute** to `data-fidelity="hi"`.
+0. **Copy the lo-fi to its hi-fi counterpart** (see SKILL.md "Lo-fi and hi-fi are separate files" for the path table):
+   - Astro: `src/pages/<route>.astro` → `src/pages/ui/<route>.astro` (create the `ui/` directory and any nested subdirectories as needed).
+   - Vite: `src/views/<route>.html` → `src/views/ui/<route>.html` (same — create dirs). If the project's `vite.config.ts` has an explicit `rollupOptions.input` list (not a glob), add the new file there.
+   - All subsequent Phase 2 steps act on the **copy**. The lo-fi file is preserved untouched.
+1. **Switch the copy's body attribute** to `data-fidelity="hi"` (pass `fidelity="hi"` to BaseLayout in Astro, or set `"fidelity": "hi"` in the base.html include locals for Vite).
 2. **Apply the chosen direction**: replace `--color-lo-*` references with project palette tokens; replace system font stack with brand fonts via Tailwind utilities (`font-display`, `font-body`, `font-mono`).
 3. **Replace grey placeholders with real imagery**:
    - 🅐 Astro: use the `<Image />` component for optimization.
@@ -71,10 +75,10 @@ Components stay the same; styles and motion change. Do not restructure unless th
    - 🅐 Astro: render the Three.js island with `client:visible`.
    - 🅥 Vite: dynamic `import()` triggered by an `IntersectionObserver`.
    - Provide a static poster image as a fallback. Lazy-load all Three.js modules.
-8. **Link the page (if new, renamed, or first-time home)**. Most hi-fi work upgrades a page that already exists in `Header` / `Footer` nav — in that case, leave the nav alone. But:
-   - **New hi-fi page** (no lo-fi predecessor) — append it to `Header` and `Footer` inside the `<!-- PAGES:START --> … <!-- PAGES:END -->` markers.
-   - **Display label changed** at hi-fi — update the link text in both Header and Footer (and in the placeholder home if it's still present). Never restructure the markup outside the markers.
-   - **This hi-fi IS the home and the placeholder home is still present** (`<!-- placeholder home: true -->` in the project's index file) — follow the home-replacement rule from `lo-fi.md` step 7: overwrite `index.astro` / `index.html` with the home wireframe and prepend `Home → /` to the `PAGES` markers in Header + Footer.
+8. **Link the page (only when the display label changed at hi-fi)**. Header / Footer link to **lo-fi routes** during the design phase; the UI route (`/ui<route>`) is reached via the `UI` status badge on the project index. So most hi-fi work leaves the nav alone. The one exception:
+   - **Display label changed at hi-fi** (the page title got renamed during the hi-fi pass) — update the link text in both Header and Footer (and in the placeholder home if it's still present). Never restructure the markup outside the markers.
+
+   The hi-fi copy at `src/pages/ui/<route>.astro` (or `src/views/ui/<route>.html`) is reachable directly at its `/ui<route>` URL; the rich status index links to it via the `UI` badge.
 9. **Build & hand off for verification**:
    - `npm run build` (fix any errors)
    - `npm run dev` — print the dev URL and ask the designer to verify at **375 / 768 / 1024 / 1440** in their own browser, paying special attention to contrast, focus states, and motion at each breakpoint.

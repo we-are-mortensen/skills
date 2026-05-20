@@ -133,7 +133,23 @@ Token discipline + grid details: `references/tokens-and-grid.md`.
 | Polish | Flat — no shadows, gradients, animations, hover micro-interactions | Shadows, hover/focus states, micro-interactions, GSAP/Three.js when justified |
 | A11y | Semantic HTML + alt text + labels | All of lo-fi **plus** WCAG AA (see `references/a11y-checklist.md`) |
 
-The fidelity switch is `data-fidelity="lo"` / `data-fidelity="hi"` on `<body>`. The same component source serves both.
+The fidelity switch is `data-fidelity="lo"` / `data-fidelity="hi"` on `<body>`. The same **components** serve both fidelities (tokens cascade off `<body data-fidelity>`); the **page file** is duplicated — see "Lo-fi and hi-fi are separate files" below.
+
+### Lo-fi and hi-fi are separate files
+
+Hi-fi never overwrites lo-fi. Mode B always starts by copying the lo-fi page file to a parallel `ui/` subtree, then edits the copy:
+
+| Stack | Lo-fi (canonical route) | Hi-fi copy (UI route) |
+|---|---|---|
+| Astro | `src/pages/<route>.astro` | `src/pages/ui/<route>.astro` |
+| Vite  | `src/views/<route>.html`  | `src/views/ui/<route>.html` |
+| Home  | `src/pages/index.astro` (Astro) / `src/views/index.html` (Vite) | `src/pages/ui/index.astro` / `src/views/ui/index.html` |
+
+The lo-fi file is preserved untouched throughout the entire hi-fi iteration. Both versions are reachable in dev: the lo-fi at its canonical route (e.g., `/events`), the hi-fi at `/ui<route>` (e.g., `/ui/events`). Designers can compare side-by-side.
+
+**Components stay shared.** If a hi-fi change to a component would break the lo-fi rendering of the same component, the change belongs in a variant (see `references/variants.md`), not in the component itself. Components remain fidelity-neutral; only the page file diverges.
+
+Header / Footer always link to lo-fi routes during the design phase. The rich status index lets designers reach the hi-fi via the `UI` status badge (which links to the page's `/ui<route>` URL). Final route consolidation is a handoff concern, not a design-phase one.
 
 **Hi-fi tokens are project-specific.** Do not carry palette/fonts between projects. At the start of every hi-fi session the designer provides them and the `@theme` block in app.css is updated to match.
 
